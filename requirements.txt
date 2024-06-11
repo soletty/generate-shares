@@ -1,0 +1,3 @@
+flask
+bip-utils
+flask-cors
